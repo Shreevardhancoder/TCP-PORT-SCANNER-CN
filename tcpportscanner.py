@@ -1,7 +1,8 @@
 import socket
 import sys
 
-import pyfigletimport socket
+import pyfiglet
+
 import ssl
 import sys
 
