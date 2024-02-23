@@ -4,7 +4,7 @@ import ssl
 import pyfiglet
 from rich.console import Console
 from rich.table import Table
-from utils import extract_json_data, threadpool_executer
+from utils import extract_json_data, threadpool_executer 
 
 console = Console()
 
