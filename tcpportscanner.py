@@ -11,7 +11,7 @@ console = Console()
 
 class PScan:
 
-    PORTS_DATA_FILE = "./common_ports.json" 
+    PORTS_DATA_FILE = "./common_ports.json"  # Update this path
 
     def __init__(self):
         self.ports_info = {}
