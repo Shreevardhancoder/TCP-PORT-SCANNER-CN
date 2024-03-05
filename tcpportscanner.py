@@ -11,7 +11,7 @@ console = Console()
 
 class PScan:
 
-    PORTS_DATA_FILE = "./common_ports.json"  # Update this path
+    PORTS_DATA_FILE = "./COMMONPORTS.json"  # Update this path
 
     def __init__(self):
         self.ports_info = {}
@@ -33,17 +33,37 @@ class PScan:
                 service = "Unknown"
             # Check if the connection is secure
             is_secure = self.check_secure_connection(port)
-            self.open_ports.append((port, service, is_secure))
+            # Additional check for HTTP service
+            if service.lower() == "http":
+                if self.is_http_port_open(port):
+                    self.open_ports.append((port, service, is_secure))
+            else:
+                self.open_ports.append((port, service, is_secure))
         sock.close()
 
     def check_secure_connection(self, port):
         context = ssl.create_default_context()
         try:
-            with socket.create_connection((self.remote_host, port)) as sock:
-                with context.wrap_socket(sock, server_hostname=self.remote_host) as ssock:
+           with socket.create_connection((self.remote_host, port)) as sock:
+              with context.wrap_socket(sock, server_hostname=self.remote_host) as ssock:
+                  return "Connection is secure"
+        except (ssl.CertificateError, ssl.SSLError, ConnectionRefusedError) as e:
+           return f"Connection is not secure: {str(e)}"
+
+
+    def is_http_port_open(self, port):
+        http_get_request = b"GET / HTTP/1.1\r\nHost: example.com\r\n\r\n"
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.settimeout(1)
+                s.connect((self.remote_host, port))
+                s.sendall(http_get_request)
+                response = s.recv(1024)
+                if b"HTTP/1.1" in response:
                     return True
-        except (ssl.CertificateError, ssl.SSLError, ConnectionRefusedError):
-            return False
+        except (socket.timeout, ConnectionRefusedError, OSError):
+            pass
+        return False
 
     def show_completion_message(self):
         print()
