@@ -42,13 +42,16 @@ class PScan:
         sock.close()
 
     def check_secure_connection(self, port):
-        context = ssl.create_default_context()
-        try:
-           with socket.create_connection((self.remote_host, port)) as sock:
-              with context.wrap_socket(sock, server_hostname=self.remote_host) as ssock:
-                  return "Connection is secure"
-        except (ssl.CertificateError, ssl.SSLError, ConnectionRefusedError) as e:
-           return f"Connection is not secure: {str(e)}"
+       context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+       context.check_hostname = True
+       context.verify_mode = ssl.CERT_REQUIRED
+       try:
+        with socket.create_connection((self.remote_host, port)) as sock:
+            with context.wrap_socket(sock, server_hostname=self.remote_host) as ssock:
+                return "Connection is secure"
+       except (ssl.CertificateError, ssl.SSLError, ConnectionRefusedError) as e:
+          return f"Connection is not secure: {str(e)}"
+
 
 
     def is_http_port_open(self, port):
