@@ -12,7 +12,7 @@ class PScan:
 
     PORTS_DATA_FILE = "./COMMONPORTS.json" 
     SSL_CERT_FILE = "./server.crt" 
-    SSL_KEY_FILE = "./server.key"  # Update this path
+    SSL_KEY_FILE = "./server.key" 
 
     def __init__(self):
         self.ports_info = {}
