@@ -87,13 +87,13 @@ class PScan:
 
     @staticmethod
     def show_startup_message():
-        ascii_art = pyfiglet.figlet_format("# PSCAN #")
-        console.print(f"[bold green]{ascii_art}[/bold green]")
-        console.print("#" * 55, style="bold green")
+        ascii_art = pyfiglet.figlet_format(" PSCAN ")
+        console.print(f"")
+        
         console.print(
-            "#" * 9, "Simple MultiThread TCP Port Scanner", "#" * 9, style="bold green"
+             "SIMPLE MULTITHREAD TCP PORT SCANNER "
         )
-        console.print("#" * 55, style="bold green")
+        
         print()
 
     @staticmethod
