@@ -8,10 +8,11 @@ from utils import extract_json_data, threadpool_executer
 
 console = Console()
 
-
 class PScan:
 
-    PORTS_DATA_FILE = "./COMMONPORTS.json"  # Update this path
+    PORTS_DATA_FILE = "./COMMONPORTS.json" 
+    SSL_CERT_FILE = "./server.crt" 
+    SSL_KEY_FILE = "./server.key"  # Update this path
 
     def __init__(self):
         self.ports_info = {}
@@ -42,16 +43,16 @@ class PScan:
         sock.close()
 
     def check_secure_connection(self, port):
-       context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-       context.check_hostname = True
-       context.verify_mode = ssl.CERT_REQUIRED
-       try:
+      context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+      context.check_hostname = True
+      context.verify_mode = ssl.CERT_REQUIRED
+      context.load_cert_chain(certfile=PScan.SSL_CERT_FILE, keyfile=PScan.SSL_KEY_FILE)
+      try:
         with socket.create_connection((self.remote_host, port)) as sock:
             with context.wrap_socket(sock, server_hostname=self.remote_host) as ssock:
                 return "Connection is secure"
-       except (ssl.CertificateError, ssl.SSLError, ConnectionRefusedError) as e:
-          return f"Connection is not secure: {str(e)}"
-
+      except (ssl.CertificateError, ssl.SSLError, ConnectionRefusedError) as e:
+        return f"Connection is not secure: {str(e)}"
 
 
     def is_http_port_open(self, port):
@@ -92,22 +93,12 @@ class PScan:
     def show_startup_message():
         ascii_art = pyfiglet.figlet_format(" PSCAN ")
         console.print(f"")
-        
+
         console.print(
              "SIMPLE MULTITHREAD TCP PORT SCANNER "
         )
-        
-        print()
 
-    @staticmethod
-    def get_host_ip_addr(target):
-        try:
-            ip_addr = socket.gethostbyname(target)
-        except socket.gaierror as e:
-            console.print(f"{e}. Exiting.", style="bold red")
-            sys.exit()
-        console.print(f"\nIP address acquired: [bold blue]{ip_addr}[/bold blue]")
-        return ip_addr
+        print()
 
     @staticmethod
     def get_host_ip_addr(target):
@@ -137,6 +128,7 @@ class PScan:
                 sys.exit()
             else:
                 self.run()
+
     def run(self):
         threadpool_executer(
             self.scan_port, self.ports_info.keys(), len(self.ports_info.keys())
