@@ -10,7 +10,7 @@ console = Console()
 
 class PScan:
 
-    PORTS_DATA_FILE = "./COMMONPORTS.json" 
+    PORTS_DATA_FILE = "./COMMONPORTS.json"  
     SSL_CERT_FILE = "./server.crt" 
     SSL_KEY_FILE = "./server.key" 
 
