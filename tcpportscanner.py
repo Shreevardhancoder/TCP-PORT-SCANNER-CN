@@ -109,23 +109,34 @@ class PScan:
         console.print(f"\nIP address acquired: [bold blue]{ip_addr}[/bold blue]")
         return ip_addr
 
+    @staticmethod
+    def get_host_ip_addr(target):
+        try:
+            ip_addr = socket.gethostbyname(target)
+        except socket.gaierror as e:
+            console.print(f"{e}. Exiting.", style="bold red")
+            sys.exit()
+        console.print(f"\nIP address acquired: [bold blue]{ip_addr}[/bold blue]")
+        return ip_addr
+
     def initialize(self):
         self.show_startup_message()
         self.get_ports_info()
         try:
-            target = console.input("[bold blue]Target: ")
+            targets = console.input("[bold blue]Targets (comma-separated): ").split(',')
         except KeyboardInterrupt:
             console.print(f"\nRoger that! Exiting.", style="bold red")
             sys.exit()
-        self.remote_host = self.get_host_ip_addr(target)
-        try:
-            input("\nPScan is ready. Press ENTER to run the scanner.")
-        except KeyboardInterrupt:
-            console.print(f"\nRoger that. Exiting.", style="bold red")
-            sys.exit()
-        else:
-            self.run()
-
+        for target in targets:
+            target = target.strip()
+            self.remote_host = self.get_host_ip_addr(target)
+            try:
+                input(f"\nPScan is ready for {target}. Press ENTER to run the scanner.")
+            except KeyboardInterrupt:
+                console.print(f"\nRoger that. Exiting.", style="bold red")
+                sys.exit()
+            else:
+                self.run()
     def run(self):
         threadpool_executer(
             self.scan_port, self.ports_info.keys(), len(self.ports_info.keys())
